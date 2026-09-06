@@ -1,0 +1,10 @@
+{
+  "name": "Warrick4Wellness Workout",
+  "short_name": "Workout",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#111111",
+  "orientation": "portrait",
+  "description": "12-exercise workout timer with 2 rotations."
+}
