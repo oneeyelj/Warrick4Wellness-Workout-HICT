@@ -105,6 +105,7 @@ let index=0;
 let phase="work";
 let remaining=30;
 let running=false;
+let wakeLock=null;
 
 let endTime=0;
 let animation;
@@ -118,6 +119,23 @@ speechSynthesis.speak(voice);
 }
 }
 
+async function requestWakeLock(){
+try{
+if("wakeLock" in navigator){
+wakeLock=await navigator.wakeLock.request("screen");
+}
+}catch(err){
+console.log("Wake Lock error:",err);
+}
+}
+
+async function releaseWakeLock(){
+if(wakeLock){
+await wakeLock.release();
+wakeLock=null;
+}
+}
+ 
 function setLevel(newLevel){
 
 if(running)return;
@@ -193,6 +211,8 @@ if(rotation===2){
 
 running=false;
 
+releaseWakeLock(); 
+ 
 document.getElementById("status").textContent="Workout Complete";
 document.getElementById("exercise").textContent="Workout Complete";
 document.getElementById("next").textContent="";
@@ -261,11 +281,13 @@ animation=requestAnimationFrame(tick);
 
 }
 
-function start(){
+async function start(){
 
 if(running)return;
 
 running=true;
+
+await requestWakeLock();
 
 if(endTime===0){
 
@@ -286,9 +308,11 @@ animation=requestAnimationFrame(tick);
 
 }
 
-function pause(){
+async function pause(){
 
 if(!running)return;
+
+await releaseWakeLock();
 
 remaining=Math.max(0,(endTime-Date.now())/1000);
 
@@ -310,7 +334,8 @@ update();
 function reset(){
 
 running=false;
-
+releaseWakeLock();
+ 
 if(animation)cancelAnimationFrame(animation);
 
 if("speechSynthesis" in window)
