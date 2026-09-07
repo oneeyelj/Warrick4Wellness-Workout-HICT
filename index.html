@@ -135,6 +135,13 @@ await wakeLock.release();
 wakeLock=null;
 }
 }
+document.addEventListener("visibilitychange", async () => {
+
+if(document.visibilityState === "visible" && running){
+await requestWakeLock();
+}
+
+});
  
 function setLevel(newLevel){
 
